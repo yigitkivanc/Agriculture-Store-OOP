@@ -1,36 +1,101 @@
-public class Fruit extends Crop implements Comparable<Fruit>{
-    protected String taste;
-    protected double price;
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package JavaApplication7.src.javaapplication7;
+
+
+
+
+
+/**
+ *
+ * @author yigit
+ */
+public class Fruit extends Crop implements Comparable<Fruit> {
+  
+    private String taste;
+    private double price;
+    private CropKeeper keeper;
     private String color;
 
-    private CropKeeper keeper;
-
-    public Fruit(String name, double weight, String cultivatedSeason, String taste, double price) {
+    public Fruit(String taste, double price, CropKeeper keeper, String color, String name, double weight, String cultivatedSeason) {
         super(name, weight, cultivatedSeason);
         this.taste = taste;
         this.price = price;
+        this.keeper = keeper;
+        this.color = color;
+        if(keeper instanceof Supplier){
+           ((Supplier)keeper).addCrop(this);
+         //   System.out.println("supplier geldi"); 
+        }else if(keeper instanceof Store){
+            try {
+                ((Store)keeper).importCrop(this);
+            } catch (CapacityNotEnoughException ex) {
+                
+            }
+           
+        }else{
+          //  System.out.println("bir şey gelmedi");
+        }
     }
 
+    
+    
+    public Fruit(String name,String color,CropKeeper keeper){
+        this.color=color;
+        setName(name);
+        this.keeper=keeper;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public CropKeeper getKeeper() {
+        return keeper;
+    }
+ public double getPrice() {
+        return price;
+    }
+   
+    @Override
+    public String consumeIt() {
+       return "fruits are consumed raw";
+    }
+
+    @Override
+    public void storeIt() throws CanNotBeStoredException {
+        
+        if(keeper instanceof Store ){
+            try {
+                ((Store)keeper).importCrop(this);
+            } catch (CapacityNotEnoughException ex) {
+                System.out.println(ex.toString());
+            }
+        
+      }else{
+            throw new CanNotBeStoredException("Supplier can not be stored");
+        }
+    }
 
     @Override
     public String toString() {
-        return "NAME: " + super.getName() + " WEIGHT: " + super.getWeight() + " CULTIVATED SEASON: " + super.getCultivatedSeason() + " " + "TASTE: " + taste + " PRICE: " + price;
+        return " taste:"+taste +" price"+price +" color" +color+" name"+ getName()+ " weight" +getWeight() + " cultivatedSeason:" +getCultivatedSeason();
     }
 
     @Override
-    public void consumeIt() {
-        System.out.println("Fruits are consumed raw");
+    public int compareTo(Fruit o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    @Override
-    public void storeIt() throws CapacityNotEnoughException {
-        ((Store) keeper).importCrop(this);
+    
+    public boolean equals(Fruit obj) {
+        
+        return obj.getName().equals(this.getName())&& obj.getColor().equals(this.getColor());
+        
     }
-    @Override
-    public int compareTo(Fruit fruit) {
-        if(this.name == fruit.name && this.color == fruit.color) return 0;
-        else return (int) (this.weight - fruit.weight);
-    }
-
-
+    
+    
 }
